@@ -2,6 +2,8 @@
 
 A new Flutter package project.
 
+![image](https://coding-pages-bucket-3485423-7990906-4062-359403-1301677377.cos-website.ap-hongkong.myqcloud.com/post-images/1604980647592.png)
+
 ## 1：fx_ddfilter_view.dart 布局文件说明
 
 ##### 1.1：FxDDFilterView 
