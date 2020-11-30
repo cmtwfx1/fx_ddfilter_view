@@ -78,6 +78,27 @@ A new Flutter package project.
   }) : super(key: key);
 ```
 
+##### 1.3：_FxDDFilerMoreSelectView
+`_FxDDFilerMoreSelectView` 多条件筛选，当 maxSelectedCount 大于1，则构建此widget，可选择多个条件，显示取消确定按钮
+```
+  /// [rowHeight] 单个row的高度
+  /// [textStyle] 内容文本样式
+  /// [cancelBtnTextStyle] 如果是二级联动筛选样式的取消按钮样式
+  /// [sureBtnTextStyle] 如果是二级联动筛选样式的确定按钮样式
+  /// [data] FxDDFilterInfo 整个筛选的添加内容数据源
+  /// [handle] 确认和取消的回调
+  _FxDDFilerMoreSelectView({
+    Key key,
+    this.rowHeight,
+    this.data,
+    this.textStyle,
+    this.cancelBtnTextStyle,
+    this.sureBtnTextStyle,
+    this.handle
+  }) : super(key: key);
+```
+
+
 ## 2：fx_ddfilter_controller.dart 数据源文件说明
 
 ##### 2.1：FxDDFilterController
@@ -111,49 +132,70 @@ class FxDDFilterController {
 
 布局方式：
 ```
-FxDDFilterView(
-      divider: VerticalDivider(
-        color: Color(0xFFCECECE),
-        indent: 8,
-        endIndent: 10,
-      ), 
-      controller: fxDDFilterController,
-      height: 50,
-      arrowImage: Image.asset('assets/images/icon/details-arrow-down.png'),
-      border: Border.symmetric(
-        horizontal: BorderSide(
-          color: Colors.green,
-          width: 1
+Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'APP名称',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text('app')
+          ),
+          body: FxDDFilterView(
+          divider: VerticalDivider(
+            color: Color(0xFFCECECE),
+            indent: 8,
+            endIndent: 10,
+          ), 
+          controller: fxDDFilterController,
+          height: 50,
+          // arrowImage: Image.asset('assets/images/icon/details-arrow-down.png'),
+          border: Border.symmetric(
+            horizontal: BorderSide(
+              color: Colors.green,
+              width: 1
+            )
+          ),
+          child: ListView.builder(
+            itemBuilder: (context, index) {
+              return RaisedButton(
+                child: Text('${_dataSource[index]}'),
+                onPressed: () => {
+                  // print('xxxxxxxxx')
+                  updateData()
+                },
+              );
+            },
+            itemCount: _dataSource.length,
+          ),
         )
       ),
-      child: ListView.builder(
-        itemBuilder: (context, index) {
-          return RaisedButton(
-            child: Text('点击'),
-            onPressed: () => {
-              // print('xxxxxxxxx')
-              updateData()
-            },
-          );
-        },
-        itemCount: 20,
-      ),
     );
+  }
 ```
 根据`FxDDFilterController`传入的数据源类型，可自动区分筛选条件样式类型
 ```
+  FxDDFilterController fxDDFilterController;
+  List<String> _dataSource = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+
  void initState() {
-    // TODO: implement initState
     super.initState();
-    fxDDFilterController = FxDDFilterController(selectedCallBack: (id, ids, names) {
+    fxDDFilterController = FxDDFilterController(selectedCallBack: (isInit, id, ids, names) {
+      String showName = '';
       if (names.length > 1) {
-        return '多条件';
+        showName = '多条件';
         // return names.toString();
+      }else if (names.first.contains('-')) {
+        showName = names.first.split('-').last;
+      }else showName = names.first;
+      if (!isInit) {
+        // isInit true 表示初始化时选中筛选条件的回调，有多个筛选条件会被多次回调
+        setState(() {
+          _dataSource.add(showName);
+        });
       }
-      if (names.first.contains('-')) {
-        return names.first.split('-').last;
-      }
-      return names.first;
+      return showName;
     });
     fxDDFilterController.dataSource = [
       FxDDFilterInfo<FxDDFilterItemSecLinkInfo>('1', data: [FxDDFilterItemSecLinkInfo(id: '11', name: '安徽省', subItems: [FxDDFilterItemInfo(id: '11', name: '合肥市'), FxDDFilterItemInfo(id: '12', name: '芜湖市')]),
@@ -170,26 +212,29 @@ FxDDFilterView(
 ```
 动态修改数据源：
 ```
-void updateData() {
-      fxDDFilterController.dataSource = [
-        FxDDFilterInfo<FxDDFilterItemInfo>('1', data: [FxDDFilterItemInfo(id: '11', name: '条件111'), FxDDFilterItemInfo(id: '12', name: '条件112')], maxSelectedCount: 2),
-        FxDDFilterInfo<FxDDFilterItemInfo>('2', data: [FxDDFilterItemInfo(id: '21', name: '条件221'), FxDDFilterItemInfo(id: '22', name: '条件222')]),
-        FxDDFilterInfo<FxDDFilterItemInfo>('3', data: [FxDDFilterItemInfo(id: '31', name: '条件331'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332')])
+  void updateData() {
+    fxDDFilterController.dataSource = [
+      FxDDFilterInfo<FxDDFilterItemInfo>('1', data: [FxDDFilterItemInfo(id: '11', name: '条件111'), 
+                                                    FxDDFilterItemInfo(id: '12', name: '条件112')], 
+                                              maxSelectedCount: 2),
+      FxDDFilterInfo<FxDDFilterItemInfo>('2', data: [FxDDFilterItemInfo(id: '21', name: '条件221'),
+                                                    FxDDFilterItemInfo(id: '22', name: '条件222')]),
+      FxDDFilterInfo<FxDDFilterItemInfo>('3', data: [FxDDFilterItemInfo(id: '31', name: '条件331'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332')])
     ];
     fxDDFilterController.reloadData();
   }

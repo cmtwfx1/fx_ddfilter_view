@@ -1,4 +1,3 @@
-
 enum FxDDFilterSingleLineDataDirection {
   left,
   center,
@@ -97,14 +96,14 @@ class FxDDFilterInfo<T> {
     List<String> names = [];
     for (String id in ids) {
       for (var item in data) {
-        if (item is FxDDFilterItemInfo && id == (item as FxDDFilterItemInfo).id) {
-          names.add((item as FxDDFilterItemInfo).name);
+        if (item is FxDDFilterItemInfo && id == item.id) {
+          names.add(item.name);
           break;
         }else if (item is String && item == id) {
           names.add(id);
           break;
         }else if (item is FxDDFilterItemSecLinkInfo) {
-          FxDDFilterItemSecLinkInfo secLinkInfo = item as FxDDFilterItemSecLinkInfo;
+          FxDDFilterItemSecLinkInfo secLinkInfo = item;
           if (id.startsWith(secLinkInfo.id + '-')) {
             for (FxDDFilterItemInfo info in secLinkInfo.subItems) {
               if (id == secLinkInfo.id + '-' + info.id) {
@@ -113,7 +112,7 @@ class FxDDFilterInfo<T> {
             }
           }
         }else if (item is List) {
-          List<List<String>> subIdNames = initMyDefSelected(ids, item as List);
+          List<List<String>> subIdNames = initMyDefSelected(ids, item);
           names.addAll(subIdNames[1]);
         }
       }
@@ -157,7 +156,7 @@ class FxDDFilterInfo<T> {
 
 /* --------------------------------------------分割线---------------------------------------------*/
 
-typedef FxDDFilterControllerSelectedCallBack = String Function(String id, List<String> ids, List<String> names);
+typedef FxDDFilterControllerSelectedCallBack = String Function(bool isInit, String id, List<String> ids, List<String> names);
 
 /// 数据源控制类
 /// [selectedCallBack] 外部传入 - 选择筛选条件的回调，返回一个String，用来筛选栏显示文字
@@ -184,7 +183,9 @@ class FxDDFilterController {
     _dataSource = data;
     titleList.clear();
     for (FxDDFilterInfo element in data) {
-      titleList.add(selectedCallBack(element.id, element._defaultSelectedIds, element._defaultSelectedNames));
+      element._selectedIds = element._defaultSelectedIds;
+      element._selectedNames = element._defaultSelectedNames;
+      titleList.add(selectedCallBack(true, element.id, element._defaultSelectedIds, element._defaultSelectedNames));
     }
   }
 
@@ -195,33 +196,41 @@ class FxDDFilterController {
   /// 点击一个筛选条件
   /// [info] 当前的筛选
   /// [itemInfo] 当前点击的筛选条件
-  List<String> selectItem(FxDDFilterInfo info, FxDDFilterItemInfo itemInfo) {
+  List<String> selectItem(FxDDFilterInfo info, List<FxDDFilterItemInfo> itemInfos) {
     List<String> selectTitleList = titleList;
     int index = _dataSource.indexOf(info);
+
+    List<String> ids = List.from(itemInfos.map((e) => e.id));
+    List<String> names = List.from(itemInfos.map((e) => e.name));
+    info._selectedIds = ids;
+    info._selectedNames = names;
+    String showName = selectedCallBack(false, info.id, info._selectedIds, info._selectedNames);
+    selectTitleList[index] = showName;
+    /*
     if (info.maxSelectedCount > 1) {
       // 需要判断是取消还是选中
       if (info.isSelected(itemInfo)) {
         if (info._selectedIds.length == 1) {
-          String showName = selectedCallBack(info.id, info._selectedIds, info._selectedNames);
+          String showName = selectedCallBack(false, info.id, info._selectedIds, info._selectedNames);
           selectTitleList[index] = showName;
         }else {
           info._selectedIds.remove(itemInfo.id);
           info._selectedNames.remove(itemInfo.name);
-          String showName = selectedCallBack(info.id, info._selectedIds, info._selectedNames);
+          String showName = selectedCallBack(false, info.id, info._selectedIds, info._selectedNames);
           selectTitleList[index] = showName;
         }
       }else {
         info._selectedIds.add(itemInfo.id);
         info._selectedNames.add(itemInfo.name);
-        String showName = selectedCallBack(info.id, info._selectedIds, info._selectedNames);
+        String showName = selectedCallBack(false, info.id, info._selectedIds, info._selectedNames);
         selectTitleList[index] = showName;
       }
     }else {
       info._selectedIds = [itemInfo.id];
       info._selectedNames = [itemInfo.name];
-      String showName = selectedCallBack(info.id, info._selectedIds, info._selectedNames);
+      String showName = selectedCallBack(false, info.id, info._selectedIds, info._selectedNames);
       selectTitleList[index] = showName;
-    }
+    }*/
     return selectTitleList;
   }
   
@@ -231,7 +240,7 @@ class FxDDFilterController {
     
     info._selectedIds = [secItemInfo.id + '-' + itemInfo.id];
     info._selectedNames = [secItemInfo.name + '-' + itemInfo.name];
-    String showName = selectedCallBack(info.id, info._selectedIds, info._selectedNames);
+    String showName = selectedCallBack(false, info.id, info._selectedIds, info._selectedNames);
     selectTitleList[index] = showName;
 
     return selectTitleList;

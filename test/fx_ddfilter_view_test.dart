@@ -19,7 +19,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    fxDDFilterController = FxDDFilterController(selectedCallBack: (id, ids, names) {
+    fxDDFilterController = FxDDFilterController(selectedCallBack: (isInit, id, ids, names) {
+      if (!isInit) {
+        // isInit true 表示初始化时选中筛选条件的回调，有多个筛选条件会被多次回调
+      }
       if (names.length > 1) {
         return '多条件';
         // return names.toString();
@@ -43,25 +46,28 @@ class _MyAppState extends State<MyApp> {
   }
 
   void updateData() {
-      fxDDFilterController.dataSource = [
-        FxDDFilterInfo<FxDDFilterItemInfo>('1', data: [FxDDFilterItemInfo(id: '11', name: '条件111'), FxDDFilterItemInfo(id: '12', name: '条件112')], maxSelectedCount: 2),
-        FxDDFilterInfo<FxDDFilterItemInfo>('2', data: [FxDDFilterItemInfo(id: '21', name: '条件221'), FxDDFilterItemInfo(id: '22', name: '条件222')]),
-        FxDDFilterInfo<FxDDFilterItemInfo>('3', data: [FxDDFilterItemInfo(id: '31', name: '条件331'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332'), 
-                                                      FxDDFilterItemInfo(id: '32', name: '条件332')])
+    fxDDFilterController.dataSource = [
+      FxDDFilterInfo<FxDDFilterItemInfo>('1', data: [FxDDFilterItemInfo(id: '11', name: '条件111'), 
+                                                    FxDDFilterItemInfo(id: '12', name: '条件112')], 
+                                              maxSelectedCount: 2),
+      FxDDFilterInfo<FxDDFilterItemInfo>('2', data: [FxDDFilterItemInfo(id: '21', name: '条件221'),
+                                                    FxDDFilterItemInfo(id: '22', name: '条件222')]),
+      FxDDFilterInfo<FxDDFilterItemInfo>('3', data: [FxDDFilterItemInfo(id: '31', name: '条件331'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332'), 
+                                                    FxDDFilterItemInfo(id: '32', name: '条件332')])
     ];
     fxDDFilterController.reloadData();
   }
