@@ -66,7 +66,7 @@ class _FxDDFilterLayout {
             ),
             RotatedBox(
               quarterTurns: open ? 2 : 0,
-              child: headerImage,
+              child: headerImage != null ? headerImage : Icon(Icons.arrow_drop_down),
             )
             // open ? : Image.asset('assets/images/icon/details-arrow-down.png')
           ],
@@ -83,6 +83,7 @@ class _FxDDFilterLayout {
     if (filterInfo[0] is FxDDFilterItemSecLinkInfo) {
       return Container(
         child: _FxDDFilerPickerView(
+          key: Key(filterInfo.id),
           rowHeight: footerItemHeight,
           data: filterInfo,
           textStyle: headerTextStyle,
@@ -144,7 +145,8 @@ class _FxDDFilterLayout {
               itemInfo.name,
               style: footerTextStyle,
             ),
-            Image.asset(isSelected ? 'assets/images/icon/details-arrow-down.png' : 'assets/images/icon/details-arrow-up.png')
+            Icon(isSelected ? Icons.arrow_drop_down: Icons.arrow_drop_up)
+            // Image.asset(isSelected ? 'assets/images/icon/details-arrow-down.png' : 'assets/images/icon/details-arrow-up.png')
           ],
         ),
         onPressed: () => handle(null, [itemInfo])
@@ -567,7 +569,7 @@ class _FxDDFilterViewState extends State<FxDDFilterView> {
     );
   }
   double get filterFooterViewHeight {
-    if (_currentFilterItemInfo == null) {
+    if (_currentFilterItemInfo == null || !_showFilterView) {
       return 0;
     }
     double height = _currentFilterItemInfo.maxSelectedCount > 1 ? 50 : 0;
@@ -662,7 +664,7 @@ class _FxDDFilterViewState extends State<FxDDFilterView> {
             child: Container(
               height: filterFooterViewHeight,
               child: filterFooterViewWidget,
-              // color: Colors.white
+              color: Colors.white
             ),
           )
         )
